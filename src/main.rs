@@ -1,6 +1,6 @@
-use tic_tac_toe::{get_user_turn, Master};
+use tic_tac_toe::Master;
 
 fn main() {
-    let master = Master::new();
-    get_user_turn();
+    let mut master: Master = Master::new();
+    master.run();
 }
