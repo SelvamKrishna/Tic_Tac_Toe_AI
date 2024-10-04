@@ -1,9 +1,5 @@
 #[cfg(test)]
-mod tests
-{
-
+mod tests {
     #[test]
-    fn user_play()
-    {
-    }
+    fn user_play() {}
 }
