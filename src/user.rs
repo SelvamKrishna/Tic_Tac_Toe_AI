@@ -10,8 +10,8 @@ impl User {
 
 impl Choice for User {
     fn choice(&self) -> Coordinate {
-        let get_usize_input = || loop {
-            print!("Enter row (0-2): ");
+        let get_usize_input = |dimension: &str| loop {
+            println!("Enter {} (0-2): ", dimension);
             let mut input: String = String::new();
             std::io::stdin()
                 .read_line(&mut input)
@@ -27,6 +27,6 @@ impl Choice for User {
                 }
             };
         };
-        return Coordinate::new(get_usize_input(), get_usize_input());
+        return Coordinate::new(get_usize_input("row"), get_usize_input("column"));
     }
 }

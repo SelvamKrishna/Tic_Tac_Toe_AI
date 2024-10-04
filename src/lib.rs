@@ -34,6 +34,8 @@ pub fn get_user_turn() -> bool {
 }
 
 impl Master {
+    const LINE: &str = "-------------------";
+
     pub fn new() -> Self {
         return Master {
             board: Board::new(),
@@ -44,22 +46,35 @@ impl Master {
     }
 
     pub fn run(&mut self) {
+        let display_board = |this: &Self| {
+            println!("{}", Self::LINE);
+            this.board.draw();
+            println!("{}", Self::LINE);
+        };
+
         let user_value: bool = get_user_turn();
 
         let mut input_cell: Coordinate;
 
-        println!("{}'s turn:", if self.turn { "X" } else { "O" });
-
         while !self.board.is_full() {
-            self.board.draw();
+            display_board(self);
+            println!("{}'s turn:", if self.turn { "X" } else { "O" });
 
             input_cell = match user_value == self.turn {
                 true => self.user.choice(),
                 false => self.ai.choice(),
             };
 
-            let _ = self.board.place(input_cell, self.turn);
+            match self.board.place(input_cell, self.turn) {
+                Ok(_) => {}
+                Err(msg) => {
+                    warn(msg);
+                    continue;
+                }
+            }
             self.turn = !self.turn;
         }
+
+        display_board(self);
     }
 }

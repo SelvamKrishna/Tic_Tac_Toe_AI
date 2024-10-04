@@ -21,5 +21,5 @@ pub trait Choice {
 }
 
 pub fn warn(msg: &str) {
-    eprintln!("WARN: {}", msg);
+    eprintln!("\nWARNING: {}\n", msg);
 }
