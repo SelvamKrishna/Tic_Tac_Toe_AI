@@ -6,14 +6,7 @@ use std::io;
 
 use crate::board::Board;
 use crate::user::User;
-use crate::utils::{warn, Choice, Coordinate};
-
-pub struct Master {
-    board: Board,
-    user: User,
-    ai: User,
-    turn: bool,
-}
+use crate::utils::*;
 
 pub fn get_user_turn() -> bool {
     println!("Do you want to play first? ( Y / N ): ");
@@ -31,6 +24,13 @@ pub fn get_user_turn() -> bool {
             Err(_) => continue,
         }
     }
+}
+
+pub struct Master {
+    board: Board,
+    user: User,
+    ai: User,
+    turn: bool,
 }
 
 impl Master {
