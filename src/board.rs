@@ -1,5 +1,12 @@
 use crate::utils::Coordinate;
 
+pub enum GameState {
+    InProgress,
+    Draw,
+    XWin,
+    OWin,
+}
+
 pub struct Board {
     grid: [[Option<bool>; 3]; 3],
     moves: u8,
@@ -24,8 +31,80 @@ impl Board {
         }
     }
 
-    pub fn is_full(&self) -> bool {
-        return self.moves >= 9;
+    pub fn check_row(&self, row: usize) -> bool {
+        match self.grid[row] {
+            [Some(val1), Some(val2), Some(val3)] => {
+                return val1 == val2 && val2 == val3;
+            }
+            _ => return false,
+        }
+    }
+
+    pub fn check_column(&self, col: usize) -> bool {
+        match (self.grid[0][col], self.grid[1][col], self.grid[2][col]) {
+            (Some(val1), Some(val2), Some(val3)) => {
+                return val1 == val2 && val2 == val3;
+            }
+            _ => return false,
+        }
+    }
+
+    pub fn check_diagonal(&self) -> bool {
+        match (self.grid[0][0], self.grid[1][1], self.grid[2][2]) {
+            (Some(val1), Some(val2), Some(val3)) => {
+                return val1 == val2 && val2 == val3;
+            }
+            _ => {}
+        }
+
+        match (self.grid[0][2], self.grid[1][1], self.grid[2][0]) {
+            (Some(val1), Some(val2), Some(val3)) => {
+                return val1 == val2 && val2 == val3;
+            }
+            _ => return false,
+        }
+    }
+
+    pub fn get_state(&self) -> GameState {
+        let mut state: GameState = GameState::InProgress;
+
+        if self.moves >= 9 {
+            state = GameState::Draw;
+        }
+
+        if self.check_diagonal() {
+            if self.grid[1][1] == Some(true) {
+                state = GameState::XWin;
+            } else {
+                state = GameState::OWin;
+            }
+
+            return state;
+        }
+
+        for i in 0..2 {
+            if self.check_row(i) {
+                state = if self.grid[i][0] == Some(true) {
+                    GameState::XWin
+                } else {
+                    GameState::OWin
+                };
+
+                return state;
+            }
+
+            if self.check_column(i) {
+                state = if self.grid[0][i] == Some(true) {
+                    GameState::XWin
+                } else {
+                    GameState::OWin
+                };
+
+                return state;
+            }
+        }
+
+        return state;
     }
 
     pub fn draw(&self) {

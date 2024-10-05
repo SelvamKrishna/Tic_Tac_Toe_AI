@@ -4,7 +4,7 @@ mod utils;
 
 use std::io;
 
-use crate::board::Board;
+use crate::board::{Board, GameState};
 use crate::user::User;
 use crate::utils::*;
 
@@ -56,7 +56,23 @@ impl Master {
 
         let mut input_cell: Coordinate;
 
-        while !self.board.is_full() {
+        loop {
+            match self.board.get_state() {
+                GameState::InProgress => {}
+                GameState::Draw => {
+                    println!("Game Over! Its a Draw!");
+                    break;
+                }
+                GameState::XWin => {
+                    println!("Game Over! X is the Winner!");
+                    break;
+                }
+                GameState::OWin => {
+                    println!("Game Over! O is the Winner!");
+                    break;
+                }
+            }
+
             display_board(self);
             println!("{}'s turn:", if self.turn { "X" } else { "O" });
 
