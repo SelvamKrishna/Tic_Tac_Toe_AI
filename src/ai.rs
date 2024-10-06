@@ -47,9 +47,7 @@ impl AI {
 
             for cell in empty_cells {
                 let mut new_board = board.clone();
-                if let Err(msg) = new_board.place(&cell, !self.0) {
-                    warn(msg);
-                }
+                let _ = new_board.place(&cell, !self.0);
                 let (new_score, _) = AI::minmax(self, new_board, false);
 
                 if new_score < score {
