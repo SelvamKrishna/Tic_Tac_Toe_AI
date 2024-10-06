@@ -7,6 +7,7 @@ pub enum GameState {
     OWin,
 }
 
+#[derive(Clone)]
 pub struct Board {
     grid: [[Option<bool>; 3]; 3],
     moves: u8,
@@ -20,15 +21,11 @@ impl Board {
         };
     }
 
-    pub fn get(&self, x: usize, y: usize) -> Option<bool> {
-        return self.grid[x][y];
+    pub fn get(&self) -> &[[Option<bool>; 3]; 3] {
+        return &self.grid;
     }
 
-    pub fn get_moves(&self) -> u8 {
-        return self.moves;
-    }
-
-    pub fn place(&mut self, coord: Coordinate, val: bool) -> Result<bool, &str> {
+    pub fn place(&mut self, coord: &Coordinate, val: bool) -> Result<bool, &str> {
         match self.grid[coord.x()][coord.y()] {
             Some(_) => return Err("Cell is already occupied"),
             None => {

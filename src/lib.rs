@@ -28,21 +28,25 @@ fn get_user_turn() -> bool {
     }
 }
 
-pub struct Master<'a> {
+pub struct Master {
     board: Board,
     user: User,
-    ai: AI<'a>,
+    user_value: bool,
+    ai: AI,
     turn: bool,
 }
 
-impl<'a> Master<'a> {
-    const LINE: &'a str = "-------------------";
+impl Master {
+    const LINE: &str = "-------------------";
 
     pub fn new() -> Self {
+        let _user_turn = get_user_turn();
+
         return Master {
             board: Board::new(),
             user: User::new(),
-            ai: AI::new(),
+            user_value: _user_turn,
+            ai: AI::new(!_user_turn),
             turn: true,
         };
     }
@@ -53,8 +57,6 @@ impl<'a> Master<'a> {
             this.board.draw();
             println!("{}", Self::LINE);
         };
-
-        let user_value: bool = get_user_turn();
 
         let mut input_cell: Coordinate;
 
@@ -78,12 +80,12 @@ impl<'a> Master<'a> {
             display_board(self);
             println!("{}'s turn:", if self.turn { "X" } else { "O" });
 
-            input_cell = match user_value == self.turn {
+            input_cell = match self.user_value == self.turn {
                 true => self.user.choice(),
-                false => self.ai.choice(),
+                false => self.ai.choice(&self.board),
             };
 
-            match self.board.place(input_cell, self.turn) {
+            match self.board.place(&input_cell, self.turn) {
                 Ok(_) => {}
                 Err(msg) => {
                     warn(msg);

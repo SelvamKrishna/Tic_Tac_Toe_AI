@@ -1,44 +1,87 @@
-use crate::board::Board;
+use crate::board::{Board, GameState};
 use crate::utils::Coordinate;
+use crate::warn;
 
-struct ScoreSet {
-    coordinate: Coordinate,
-    score: i32,
-}
+pub struct AI(bool);
 
-pub struct AI<'a> {
-    score_sets: Vec<ScoreSet>,
-    board: Option<&'a Board>,
-}
-
-impl<'a> AI<'a> {
-    pub fn new() -> Self {
-        return AI {
-            score_sets: vec![],
-            board: None,
-        };
+impl AI {
+    pub fn new(turn: bool) -> Self {
+        return AI(turn);
     }
 
-    pub fn set_board(&mut self, board: &'a Board) {
-        self.board = Some(board)
+    fn get_empty_cells(grid: &[[Option<bool>; 3]; 3], empty_cells: &mut Vec<Coordinate>) {
+        *empty_cells = Vec::new();
+
+        for x in 0..3 {
+            for y in 0..3 {
+                if grid[x][y].is_none() {
+                    empty_cells.push(Coordinate::new(x, y));
+                }
+            }
+        }
     }
 
-    pub fn choice(&self) -> Coordinate {
-        if self.board.unwrap().get_moves() < 2 {
-            if let None = self.board.unwrap().get(1, 1) {
-                return Coordinate::new(1, 1);
+    fn evalurate_state(turn: bool, board: &Board) -> Option<i8> {
+        match board.get_state() {
+            GameState::InProgress => None,
+            GameState::Draw => return Some(0),
+            GameState::XWin => return if turn { Some(1) } else { Some(-1) },
+            GameState::OWin => return if turn { Some(-1) } else { Some(1) },
+        }
+    }
+
+    fn minmax(&self, board: Board, minimizing: bool) -> (i8, Option<Coordinate>) {
+        match AI::evalurate_state(self.0, &board) {
+            Some(val) => return (val, None),
+            None => {}
+        }
+
+        let mut score: i8;
+        let mut empty_cells: Vec<Coordinate> = vec![];
+        AI::get_empty_cells(board.get(), &mut empty_cells);
+
+        let mut best_move = empty_cells[0].clone();
+
+        if minimizing {
+            score = 100;
+
+            for cell in empty_cells {
+                let mut new_board = board.clone();
+                if let Err(msg) = new_board.place(&cell, !self.0) {
+                    warn(msg);
+                }
+                let (new_score, _) = AI::minmax(self, new_board, false);
+
+                if new_score < score {
+                    score = new_score;
+                    best_move = cell.clone();
+                }
+            }
+        } else {
+            score = -100;
+
+            for cell in empty_cells {
+                let mut new_board = board.clone();
+                let _ = new_board.place(&cell, self.0);
+                let (new_score, _) = AI::minmax(self, new_board, true);
+
+                if new_score > score {
+                    score = new_score;
+                    best_move = cell.clone();
+                }
             }
         }
 
-        match self
-            .score_sets
-            .iter()
-            .max_by(|x: &&ScoreSet, y: &&ScoreSet| x.score.cmp(&y.score))
-        {
-            Some(best_coords) => {
-                return Coordinate::new(best_coords.coordinate.x(), best_coords.coordinate.y());
-            }
-            None => unreachable!(),
+        return (score, Some(best_move));
+    }
+
+    pub fn choice(&self, board: &Board) -> Coordinate {
+        if let (_, Some(coordinate)) = self.minmax(board.clone(), false) {
+            return coordinate;
+        } else {
+            warn("AI can't choose an output");
         }
+
+        unimplemented!()
     }
 }
