@@ -8,6 +8,12 @@ pub enum GameState {
     OWin,
 }
 
+pub enum Winner {
+    X,
+    O,
+    None,
+}
+
 #[derive(Clone)]
 pub struct Board {
     grid: [[Option<bool>; 3]; 3],
@@ -37,71 +43,35 @@ impl Board {
         }
     }
 
-    pub fn check_row(&self, row: usize) -> bool {
+    pub fn check_row(&self, row: usize) -> Winner {
         match self.grid[row] {
-            [Some(val1), Some(val2), Some(val3)] => {
-                return val1 == val2 && val2 == val3;
-            }
-            _ => return false,
+            [Some(true), Some(true), Some(true)] => return Winner::X,
+            [Some(false), Some(false), Some(false)] => return Winner::O,
+            _ => return Winner::None,
         }
     }
 
-    pub fn check_column(&self, col: usize) -> bool {
+    pub fn check_column(&self, col: usize) -> Winner {
         match (self.grid[0][col], self.grid[1][col], self.grid[2][col]) {
-            (Some(val1), Some(val2), Some(val3)) => {
-                return val1 == val2 && val2 == val3;
-            }
-            _ => return false,
+            (Some(true), Some(true), Some(true)) => return Winner::X,
+            (Some(false), Some(false), Some(false)) => return Winner::O,
+            _ => return Winner::None,
         }
     }
 
-    pub fn check_diagonal1(&self) -> bool {
+    pub fn check_diagonal(&self) -> Winner {
         match (self.grid[0][0], self.grid[1][1], self.grid[2][2]) {
-            (Some(val1), Some(val2), Some(val3)) => {
-                return val1 == val2 && val2 == val3;
-            }
-            _ => return false,
+            (Some(true), Some(true), Some(true)) => return Winner::X,
+            (Some(false), Some(false), Some(false)) => return Winner::O,
+            _ => {}
         }
-    }
 
-    pub fn check_diagonal2(&self) -> bool {
         match (self.grid[0][2], self.grid[1][1], self.grid[2][0]) {
-            (Some(val1), Some(val2), Some(val3)) => {
-                return val1 == val2 && val2 == val3;
-            }
-            _ => return false,
+            (Some(true), Some(true), Some(true)) => return Winner::X,
+            (Some(false), Some(false), Some(false)) => return Winner::O,
+            _ => return Winner::None,
         }
     }
-
-    // pub fn get_state(&self) -> GameState {
-    //     let check_winner = |x: usize, y: usize| {
-    //         return if self.grid[x][y].is_some_and(|x| x) {
-    //             GameState::XWin
-    //         } else {
-    //             GameState::OWin
-    //         };
-    //     };
-
-    //     if self.check_diagonal() {
-    //         return check_winner(1, 1);
-    //     }
-
-    //     for i in 0..2 {
-    //         if self.check_row(i) {
-    //             return check_winner(i, 0);
-    //         }
-
-    //         if self.check_column(i) {
-    //             return check_winner(0, i);
-    //         }
-    //     }
-
-    //     return if self.moves < 9 {
-    //         GameState::InProgress
-    //     } else {
-    //         GameState::Draw
-    //     };
-    // }
 
     pub fn draw(&self) {
         let mut index: u8 = 0;
@@ -122,29 +92,23 @@ impl Board {
     }
 
     pub fn get_state(&self) -> GameState {
-        if self.check_diagonal1() || self.check_diagonal2() {
-            match self.grid[1][1] {
-                Some(true) => return GameState::XWin,
-                Some(false) => return GameState::OWin,
-                None => unreachable!(),
-            };
+        match self.check_diagonal() {
+            Winner::X => return GameState::XWin,
+            Winner::O => return GameState::OWin,
+            Winner::None => {}
         }
 
-        for i in 0..2 {
-            if self.check_row(i) {
-                match self.grid[i][0] {
-                    Some(true) => return GameState::XWin,
-                    Some(false) => return GameState::OWin,
-                    None => unreachable!(),
-                };
+        for i in 0..=2 {
+            match self.check_row(i) {
+                Winner::X => return GameState::XWin,
+                Winner::O => return GameState::OWin,
+                Winner::None => {}
             }
 
-            if self.check_column(i) {
-                match self.grid[0][i] {
-                    Some(true) => return GameState::XWin,
-                    Some(false) => return GameState::OWin,
-                    None => unreachable!(),
-                };
+            match self.check_column(i) {
+                Winner::X => return GameState::XWin,
+                Winner::O => return GameState::OWin,
+                Winner::None => {}
             }
         }
 
