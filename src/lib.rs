@@ -1,14 +1,16 @@
+mod ai;
 mod board;
 mod user;
 mod utils;
 
 use std::io;
 
-use crate::board::{Board, GameState};
-use crate::user::User;
-use crate::utils::*;
+use ai::AI;
+use board::{Board, GameState};
+use user::User;
+use utils::*;
 
-pub fn get_user_turn() -> bool {
+fn get_user_turn() -> bool {
     println!("Do you want to play first? ( Y / N ): ");
     let mut user_input: String = String::new();
     loop {
@@ -26,21 +28,21 @@ pub fn get_user_turn() -> bool {
     }
 }
 
-pub struct Master {
+pub struct Master<'a> {
     board: Board,
     user: User,
-    ai: User,
+    ai: AI<'a>,
     turn: bool,
 }
 
-impl Master {
-    const LINE: &str = "-------------------";
+impl<'a> Master<'a> {
+    const LINE: &'a str = "-------------------";
 
     pub fn new() -> Self {
         return Master {
             board: Board::new(),
             user: User::new(),
-            ai: User::new(),
+            ai: AI::new(),
             turn: true,
         };
     }

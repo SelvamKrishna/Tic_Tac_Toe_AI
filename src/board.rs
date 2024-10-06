@@ -20,6 +20,14 @@ impl Board {
         };
     }
 
+    pub fn get(&self, x: usize, y: usize) -> Option<bool> {
+        return self.grid[x][y];
+    }
+
+    pub fn get_moves(&self) -> u8 {
+        return self.moves;
+    }
+
     pub fn place(&mut self, coord: Coordinate, val: bool) -> Result<bool, &str> {
         match self.grid[coord.x()][coord.y()] {
             Some(_) => return Err("Cell is already occupied"),
@@ -66,11 +74,11 @@ impl Board {
     }
 
     pub fn get_state(&self) -> GameState {
-        let mut state: GameState = GameState::InProgress;
-
-        if self.moves >= 9 {
-            state = GameState::Draw;
-        }
+        let mut state: GameState = if self.moves < 9 {
+            GameState::InProgress
+        } else {
+            GameState::Draw
+        };
 
         if self.check_diagonal() {
             if self.grid[1][1] == Some(true) {
