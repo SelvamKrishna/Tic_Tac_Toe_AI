@@ -8,12 +8,12 @@ impl AI {
         return AI(turn);
     }
 
-    fn get_empty_cells(grid: &[[Option<bool>; 3]; 3], empty_cells: &mut Vec<Coordinate>) {
+    fn get_empty_cells(board: &Board, empty_cells: &mut Vec<Coordinate>) {
         *empty_cells = Vec::new();
 
         for x in 0..3 {
             for y in 0..3 {
-                if grid[x][y].is_none() {
+                if board.get(x, y).is_none() {
                     empty_cells.push(Coordinate::new(x, y));
                 }
             }
@@ -37,7 +37,7 @@ impl AI {
 
         let mut score: i8;
         let mut empty_cells: Vec<Coordinate> = vec![];
-        AI::get_empty_cells(board.get(), &mut empty_cells);
+        AI::get_empty_cells(&board, &mut empty_cells);
 
         let mut best_move = empty_cells[0].clone();
 

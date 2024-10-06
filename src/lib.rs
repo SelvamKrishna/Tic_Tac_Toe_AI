@@ -12,8 +12,8 @@ use utils::*;
 
 fn get_user_turn() -> bool {
     println!("Do you want to play first? ( Y / N ): ");
-    let mut user_input: String = String::new();
     loop {
+        let mut user_input: String = String::new();
         match io::stdin().read_line(&mut user_input) {
             Ok(_) => match user_input.trim().to_uppercase().as_str() {
                 "Y" => return true,

@@ -21,19 +21,23 @@ impl User {
 
     pub fn choice(&self) -> Coordinate {
         loop {
-            println!("Enter cell (0-8): ");
+            println!("Enter cell (1-9): ");
             let mut input: String = String::new();
             std::io::stdin()
                 .read_line(&mut input)
                 .expect("Failed to read line");
 
-            if let Ok(val) = input.trim().parse::<u8>() {
-                let (x, y) = INPUT_CELL[val as usize - 1];
-                return Coordinate::new(x, y);
-            } else {
-                warn("Please enter a number between 0 and 8.");
-                continue;
+            match input.trim().parse::<u8>() {
+                Ok(val) => {
+                    if val < 10 {
+                        let (x, y) = INPUT_CELL[val as usize - 1];
+                        return Coordinate::new(x, y);
+                    }
+                }
+                Err(_) => {}
             }
+            warn("Please enter a number between 1 and 9.");
+            continue;
         }
     }
 }
