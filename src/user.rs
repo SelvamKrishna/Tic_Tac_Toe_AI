@@ -6,10 +6,8 @@ impl User {
     pub fn new() -> Self {
         return User;
     }
-}
 
-impl Choice for User {
-    fn choice(&self) -> Coordinate {
+    pub fn choice(&self) -> Coordinate {
         let get_usize_input = |dimension: &str| loop {
             println!("Enter {} (0-2): ", dimension);
             let mut input: String = String::new();

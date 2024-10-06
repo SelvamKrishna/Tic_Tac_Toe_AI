@@ -1,5 +1,5 @@
 use crate::board::Board;
-use crate::utils::{Choice, Coordinate};
+use crate::utils::Coordinate;
 
 struct ScoreSet {
     coordinate: Coordinate,
@@ -18,10 +18,12 @@ impl<'a> AI<'a> {
             board: None,
         };
     }
-}
 
-impl<'a> Choice for AI<'a> {
-    fn choice(&self) -> Coordinate {
+    pub fn set_board(&mut self, board: &'a Board) {
+        self.board = Some(board)
+    }
+
+    pub fn choice(&self) -> Coordinate {
         if self.board.unwrap().get_moves() < 2 {
             if let None = self.board.unwrap().get(1, 1) {
                 return Coordinate::new(1, 1);

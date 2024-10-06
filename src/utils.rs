@@ -16,10 +16,6 @@ impl Coordinate {
     }
 }
 
-pub trait Choice {
-    fn choice(&self) -> Coordinate;
-}
-
 pub fn warn(msg: &str) {
     eprintln!("\nWARNING: {}\n", msg);
 }
