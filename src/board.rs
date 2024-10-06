@@ -113,14 +113,17 @@ impl Board {
     }
 
     pub fn draw(&self) {
+        let mut index: u8 = 0;
+
         for row in &self.grid {
             for &cell in row {
-                let cell_val: char = match cell {
-                    Some(true) => 'X',
-                    Some(false) => 'O',
-                    None => ' ',
+                index += 1;
+
+                match cell {
+                    Some(true) => print!("| X |"),
+                    Some(false) => print!("| O |"),
+                    None => print!("|_{}_|", index),
                 };
-                print!("|{}|", cell_val);
             }
             println!();
         }

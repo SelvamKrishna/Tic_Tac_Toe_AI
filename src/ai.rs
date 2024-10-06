@@ -1,6 +1,5 @@
 use crate::board::{Board, GameState};
 use crate::utils::Coordinate;
-use crate::warn;
 
 pub struct AI(bool);
 
@@ -46,8 +45,13 @@ impl AI {
             score = 100;
 
             for cell in empty_cells {
-                let mut new_board = board.clone();
-                let _ = new_board.place(&cell, !self.0);
+                let mut new_board: Board = board.clone();
+                match new_board.place(&cell, !self.0) {
+                    Ok(_) => {}
+                    Err(_) => {
+                        panic!("AI wasn't able to place in cell");
+                    }
+                }
                 let (new_score, _) = AI::minmax(self, new_board, false);
 
                 if new_score < score {
@@ -59,8 +63,13 @@ impl AI {
             score = -100;
 
             for cell in empty_cells {
-                let mut new_board = board.clone();
-                let _ = new_board.place(&cell, self.0);
+                let mut new_board: Board = board.clone();
+                match new_board.place(&cell, self.0) {
+                    Ok(_) => {}
+                    Err(_) => {
+                        panic!("AI wasn't able to place in cell");
+                    }
+                }
                 let (new_score, _) = AI::minmax(self, new_board, true);
 
                 if new_score > score {
@@ -77,9 +86,7 @@ impl AI {
         if let (_, Some(coordinate)) = self.minmax(board.clone(), false) {
             return coordinate;
         } else {
-            warn("AI can't choose an output");
+            unreachable!();
         }
-
-        unimplemented!()
     }
 }
