@@ -1,4 +1,4 @@
-use crate::utils::{warn, Coordinate};
+use crate::utils::*;
 
 pub struct User;
 
@@ -36,7 +36,7 @@ impl User {
                 }
                 Err(_) => {}
             }
-            warn("Please enter a number between 1 and 9.");
+            warn("Please enter a NUMBER between 1 and 9.");
             continue;
         }
     }

@@ -61,19 +61,17 @@ impl Master {
         let mut input_cell: Coordinate;
 
         loop {
-            let state = self.board.get_state();
-            dbg!(&state);
-            match state {
-                GameState::InProgress => {}
+            match self.board.get_state() {
+                GameState::None => {}
                 GameState::Draw => {
                     println!("Game Over! Its a Draw!");
                     break;
                 }
-                GameState::XWin => {
+                GameState::X => {
                     println!("Game Over! X is the Winner!");
                     break;
                 }
-                GameState::OWin => {
+                GameState::O => {
                     println!("Game Over! O is the Winner!");
                     break;
                 }

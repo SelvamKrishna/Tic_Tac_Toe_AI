@@ -22,10 +22,10 @@ impl AI {
 
     fn evalurate_state(turn: bool, board: &Board) -> Option<i8> {
         match board.get_state() {
-            GameState::InProgress => None,
+            GameState::None => None,
             GameState::Draw => return Some(0),
-            GameState::XWin => return if turn { Some(1) } else { Some(-1) },
-            GameState::OWin => return if turn { Some(-1) } else { Some(1) },
+            GameState::X => return if turn { Some(1) } else { Some(-1) },
+            GameState::O => return if turn { Some(-1) } else { Some(1) },
         }
     }
 

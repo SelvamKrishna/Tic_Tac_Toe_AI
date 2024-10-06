@@ -2,16 +2,10 @@ use crate::utils::Coordinate;
 
 #[derive(Debug)]
 pub enum GameState {
-    InProgress,
+    None,
     Draw,
-    XWin,
-    OWin,
-}
-
-pub enum Winner {
     X,
     O,
-    None,
 }
 
 #[derive(Clone)]
@@ -43,36 +37,6 @@ impl Board {
         }
     }
 
-    pub fn check_row(&self, row: usize) -> Winner {
-        match self.grid[row] {
-            [Some(true), Some(true), Some(true)] => return Winner::X,
-            [Some(false), Some(false), Some(false)] => return Winner::O,
-            _ => return Winner::None,
-        }
-    }
-
-    pub fn check_column(&self, col: usize) -> Winner {
-        match (self.grid[0][col], self.grid[1][col], self.grid[2][col]) {
-            (Some(true), Some(true), Some(true)) => return Winner::X,
-            (Some(false), Some(false), Some(false)) => return Winner::O,
-            _ => return Winner::None,
-        }
-    }
-
-    pub fn check_diagonal(&self) -> Winner {
-        match (self.grid[0][0], self.grid[1][1], self.grid[2][2]) {
-            (Some(true), Some(true), Some(true)) => return Winner::X,
-            (Some(false), Some(false), Some(false)) => return Winner::O,
-            _ => {}
-        }
-
-        match (self.grid[0][2], self.grid[1][1], self.grid[2][0]) {
-            (Some(true), Some(true), Some(true)) => return Winner::X,
-            (Some(false), Some(false), Some(false)) => return Winner::O,
-            _ => return Winner::None,
-        }
-    }
-
     pub fn draw(&self) {
         let mut index: u8 = 0;
 
@@ -92,28 +56,41 @@ impl Board {
     }
 
     pub fn get_state(&self) -> GameState {
-        match self.check_diagonal() {
-            Winner::X => return GameState::XWin,
-            Winner::O => return GameState::OWin,
-            Winner::None => {}
+        let check_3_cells =
+            |x1: usize, y1: usize, x2: usize, y2: usize, x3: usize, y3: usize| match (
+                self.grid[x1][y1],
+                self.grid[x2][y2],
+                self.grid[x3][y3],
+            ) {
+                (Some(true), Some(true), Some(true)) => return GameState::X,
+                (Some(false), Some(false), Some(false)) => return GameState::O,
+                _ => return GameState::None,
+            };
+
+        match check_3_cells(0, 0, 1, 1, 2, 2) {
+            GameState::None | GameState::Draw => {}
+            other => return other,
+        }
+
+        match check_3_cells(0, 2, 1, 1, 2, 0) {
+            GameState::None | GameState::Draw => {}
+            other => return other,
         }
 
         for i in 0..=2 {
-            match self.check_row(i) {
-                Winner::X => return GameState::XWin,
-                Winner::O => return GameState::OWin,
-                Winner::None => {}
+            match check_3_cells(i, 0, i, 1, i, 2) {
+                GameState::None | GameState::Draw => {}
+                other => return other,
             }
 
-            match self.check_column(i) {
-                Winner::X => return GameState::XWin,
-                Winner::O => return GameState::OWin,
-                Winner::None => {}
+            match check_3_cells(0, i, 1, i, 2, i) {
+                GameState::None | GameState::Draw => {}
+                other => return other,
             }
         }
 
         return if self.moves < 9 {
-            GameState::InProgress
+            GameState::None
         } else {
             GameState::Draw
         };
